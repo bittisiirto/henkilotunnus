@@ -52,8 +52,9 @@ class HetuTest < MiniTest::Unit::TestCase
 		assert_equal Hetu.new("311280-999J").valid?, false
 	end
 
-	def test_allow_badly_formatted
-		assert_equal Hetu.new("  2802 6 4-05  1u   ").valid?, true
+	def test_dont_allow_badly_formatted
+		assert_equal Hetu.new("  2802 6 4-05  1u   ").valid?, false
+		assert_equal Hetu.new("311280-999j").valid?, false
 	end
 
 	def test_to_s

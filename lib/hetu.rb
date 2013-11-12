@@ -8,7 +8,7 @@ class Hetu
   end
 
 	def initialize(pin)
-		@pin = pin.strip.gsub(/\s+/, '').upcase
+		@pin = pin
 	end
 
 	def valid?
