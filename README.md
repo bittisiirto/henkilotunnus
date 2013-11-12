@@ -1,6 +1,14 @@
 # Hetu
 
-TODO: Write a gem description
+hetu is a gem for validating Finnish [personal identification numbers](http://en.wikipedia.org/wiki/National_identification_number#Finland).
+
+```ruby
+Hetu.valid?("280264-051U")
+
+class User < ActiveRecord
+	validates :pin, hetu: true
+end
+```
 
 ## Installation
 
@@ -15,10 +23,6 @@ And then execute:
 Or install it yourself as:
 
     $ gem install hetu
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Contributing
 
