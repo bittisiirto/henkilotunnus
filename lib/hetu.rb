@@ -1,5 +1,5 @@
-require "hetu/version"
-require "hetu/hetu_validator" if defined? ActiveModel
+require 'hetu/version'
+require 'hetu/hetu_validator' if defined? ActiveModel
 
 class Hetu
 
@@ -28,15 +28,15 @@ class Hetu
   end
 
   def gender
-    ["female", "male"][person_number.to_i % 2]
+    ['female', 'male'][person_number.to_i % 2]
   end
 
   def male?
-    gender == "male"
+    gender == 'male'
   end
 
   def female?
-    gender == "female"
+    gender == 'female'
   end
 
   def checksum
@@ -62,7 +62,7 @@ class Hetu
   private
 
   def compute_checksum
-    "0123456789ABCDEFHJKLMNPRSTUVWXY"[ (date_of_birth + person_number).to_i % 31 ]
+    '0123456789ABCDEFHJKLMNPRSTUVWXY'[ (date_of_birth + person_number).to_i % 31 ]
   end
 
 end
