@@ -2,10 +2,13 @@ require 'hetu/version'
 require 'hetu/hetu_validator' if defined? ActiveModel
 
 class Hetu
+  GENDERS = ['female', 'male']
 
   def self.valid?(pin)
     new(pin).valid?
   end
+
+  attr_reader :pin
 
   def initialize(pin)
     @pin = pin
@@ -16,19 +19,19 @@ class Hetu
   end
 
   def date_of_birth
-    @pin[0..5]
+    pin[0..5]
   end
 
   def century_sign
-    @pin[6]
+    pin[6]
   end
 
   def person_number
-    @pin[7..9]
+    pin[7..9]
   end
 
   def gender
-    ['female', 'male'][person_number.to_i % 2]
+    GENDERS[person_number.to_i % 2]
   end
 
   def male?
@@ -40,11 +43,11 @@ class Hetu
   end
 
   def checksum
-    @pin[10]
+    pin[10]
   end
 
   def valid_format?
-    !!(@pin =~ /^\d{6}[-+A]\d{3}[0-9A-Z]$/)
+    !!(pin =~ /^\d{6}[-+A]\d{3}[0-9A-Z]$/)
   end
 
   def valid_checksum?
@@ -56,7 +59,7 @@ class Hetu
   end
 
   def to_s
-    @pin
+    pin
   end
 
   private
@@ -64,5 +67,4 @@ class Hetu
   def compute_checksum
     '0123456789ABCDEFHJKLMNPRSTUVWXY'[ (date_of_birth + person_number).to_i % 31 ]
   end
-
 end
