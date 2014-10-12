@@ -1,8 +1,11 @@
 require 'hetu/version'
 require 'hetu/hetu_validator' if defined? ActiveModel
 
+require 'date'
+
 class Hetu
   GENDERS = ['female', 'male']
+  CENTURIES = { '+' => 1800, '-' => 1900, 'A' => 2000 }
 
   def self.valid?(pin)
     new(pin).valid?
@@ -15,7 +18,7 @@ class Hetu
   end
 
   def valid?
-    valid_format? and valid_checksum? and valid_person_number?
+    valid_format? && valid_checksum? && valid_person_number?
   end
 
   def date_of_birth
@@ -40,6 +43,17 @@ class Hetu
 
   def female?
     gender == 'female'
+  end
+
+  # TODO: Flaw with calculation. 
+  # Should use current_year - dob_year and add +1 
+  # if birthday has already occurred this year.
+  def age
+    dob = date_of_birth
+    day = dob[0..1].to_i
+    month = dob[2..3].to_i
+    year = CENTURIES[century_sign] + dob[4..5].to_i
+    (Date.today - Date.new(year, month, day)).to_i / 365
   end
 
   def checksum

@@ -34,6 +34,11 @@ class HetuTest < Minitest::Test
     assert_equal false, h('280264-051U').female?
   end
 
+  def test_age
+    Timecop.freeze(Time.local(1994, 2, 28))
+    assert_equal 30, h('280264-051U').age
+  end
+
   def test_checksum
     assert_equal 'U', h('280264-051U').checksum
   end
