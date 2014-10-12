@@ -11,7 +11,7 @@ class Hetu
   attr_reader :pin
 
   def initialize(pin)
-    @pin = pin
+    @pin = format(pin || '')
   end
 
   def valid?
@@ -46,6 +46,16 @@ class Hetu
     pin[10]
   end
 
+  def to_s
+    pin
+  end
+
+  private
+
+  def format(s)
+    s.to_s.gsub(/\s+/, '').upcase
+  end
+
   def valid_format?
     !!(pin =~ /^\d{6}[-+A]\d{3}[0-9A-Z]$/)
   end
@@ -57,12 +67,6 @@ class Hetu
   def valid_person_number?
     (2..899).cover?(person_number.to_i)
   end
-
-  def to_s
-    pin
-  end
-
-  private
 
   def compute_checksum
     '0123456789ABCDEFHJKLMNPRSTUVWXY'[ (date_of_birth + person_number).to_i % 31 ]
