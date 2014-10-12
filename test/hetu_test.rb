@@ -1,64 +1,50 @@
 require 'test_helper'
 
-class HetuTest < MiniTest::Unit::TestCase
-  def setup
-    @pin = Hetu.new('280264-051U')
+class HetuTest < Minitest::Test
+  def h(s)
+    Hetu.new(s)
   end
 
   def test_valid
-    assert_equal @pin.valid?, true
-  end
+    [ '120464-126J',
+      '280264-051U' ].each do |pin|
+      assert h(pin).valid?
+      assert Hetu.valid? pin
+    end
 
-  def test_class_valid
-    assert_equal Hetu.valid?('280264-051U'), true
+    assert_equal false, h(nil).valid?
+    assert_equal false, h('').valid?
   end
 
   def test_date_of_birth
-    assert_equal @pin.date_of_birth, "280264"
+    assert_equal '280264', h('280264-051U').date_of_birth
   end
 
   def test_century_sign
-    assert_equal @pin.century_sign, "-"
+    assert_equal '-', h('280264-051U').century_sign
   end
 
   def test_person_number
-    assert_equal @pin.person_number, "051"
+    assert_equal '051', h('280264-051U').person_number
   end
 
   def test_gender
-    assert_equal @pin.gender, "male"
-  end
-
-  def test_gender_bools
-    assert_equal @pin.male?, true
-    assert_equal @pin.female?, false
+    assert_equal 'male', h('280264-051U').gender
+    assert_equal true, h('280264-051U').male?
+    assert_equal false, h('280264-051U').female?
   end
 
   def test_checksum
-    assert_equal @pin.checksum, "U"
-  end
-
-  def test_should_compute_correct_checksum
-    assert_equal @pin.valid_checksum?, true
-  end
-
-  def test_should_be_valid
-    ["120464-126J"].each do |pin|
-      assert_equal Hetu.new(pin).valid?, true 
-    end
+    assert_equal 'U', h('280264-051U').checksum
   end
 
   def test_special_invalid
-    assert_equal Hetu.new("311280-999J").valid?, false
+    assert_equal false, Hetu.new('311280-999J').valid?
   end
 
-  def test_dont_allow_badly_formatted
-    assert_equal Hetu.new("  2802 6 4-05  1u   ").valid?, false
-    assert_equal Hetu.new("311280-999j").valid?, false
+  def test_allow_badly_formatted
+    pin = Hetu.new('  2802 6 4-05  1u   ')
+    assert pin.valid?
+    assert '280264-051U', pin.to_s
   end
-
-  def test_to_s
-    assert_equal Hetu.new('280264-051U').to_s, '280264-051U'
-  end
-
 end
