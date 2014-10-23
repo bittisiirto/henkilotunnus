@@ -17,7 +17,20 @@ class HetuTest < Minitest::Test
   end
 
   def test_date_of_birth
-    assert_equal '280264', h('280264-051U').date_of_birth
+    dob = h('280199+972S').date_of_birth
+    assert_equal 1899, dob.year
+    assert_equal 1, dob.month
+    assert_equal 28, dob.day
+
+    dob = h('280264-051U').date_of_birth
+    assert_equal 1964, dob.year
+    assert_equal 2, dob.month
+    assert_equal 28, dob.day
+
+    dob = h('231001A0614').date_of_birth
+    assert_equal 2001, dob.year
+    assert_equal 10, dob.month
+    assert_equal 23, dob.day
   end
 
   def test_century_sign
@@ -34,8 +47,14 @@ class HetuTest < Minitest::Test
     assert_equal false, h('280264-051U').female?
   end
 
+  def test_century
+    assert_equal 1800, h('280199+972S').century
+    assert_equal 1900, h('280264-051U').century
+    assert_equal 2000, h('231001A0614').century
+  end
+
   def test_age
-    Timecop.freeze(Time.local(1994, 2, 28))
+    Timecop.freeze(Time.utc(1994, 2, 28))
     assert_equal 30, h('280264-051U').age
   end
 

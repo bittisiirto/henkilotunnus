@@ -6,6 +6,7 @@ require 'date'
 class Hetu
   GENDERS = ['female', 'male']
   CENTURIES = { '+' => 1800, '-' => 1900, 'A' => 2000 }
+  CHECKSUM_CHARS = '0123456789ABCDEFHJKLMNPRSTUVWXY'
 
   def self.valid?(pin)
     new(pin).valid?
@@ -19,10 +20,6 @@ class Hetu
 
   def valid?
     valid_format? && valid_checksum? && valid_person_number?
-  end
-
-  def date_of_birth
-    pin[0..5]
   end
 
   def century_sign
@@ -45,15 +42,23 @@ class Hetu
     gender == 'female'
   end
 
-  # TODO: Flaw with calculation. 
-  # Should use current_year - dob_year and add +1 
-  # if birthday has already occurred this year.
   def age
     dob = date_of_birth
+    # TODO: Should use EEST timezone for everything as Finland has only a single timezone (but with DST!).
+    now = Time.now.utc.to_date
+    now.year - dob.year - ((now.month > dob.month || (now.month == dob.month && now.day >= dob.day)) ? 0 : 1)
+  end
+
+  def date_of_birth
+    dob = raw_dob
     day = dob[0..1].to_i
     month = dob[2..3].to_i
-    year = CENTURIES[century_sign] + dob[4..5].to_i
-    (Date.today - Date.new(year, month, day)).to_i / 365
+    year = century + dob[4..5].to_i
+    Date.new(year, month, day)
+  end
+
+  def century
+    CENTURIES[century_sign]
   end
 
   def checksum
@@ -65,6 +70,10 @@ class Hetu
   end
 
   private
+
+  def raw_dob
+    pin[0..5]
+  end
 
   def format(s)
     s.to_s.gsub(/\s+/, '').upcase
@@ -83,6 +92,6 @@ class Hetu
   end
 
   def compute_checksum
-    '0123456789ABCDEFHJKLMNPRSTUVWXY'[ (date_of_birth + person_number).to_i % 31 ]
+    CHECKSUM_CHARS[ (raw_dob + person_number).to_i % 31 ]
   end
 end
