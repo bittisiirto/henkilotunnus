@@ -1,7 +1,5 @@
-require 'bundler/setup'
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'henkilotunnus'
 
-require 'active_model'
-require 'hetu'
-require 'timecop'
 require 'minitest/autorun'
-require 'minitest/pride'
+require 'timecop'
