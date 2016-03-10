@@ -54,8 +54,9 @@ class HetuTest < Minitest::Test
   end
 
   def test_age
-    Timecop.freeze(Time.utc(1994, 2, 28))
-    assert_equal 30, h('280264-051U').age
+    Timecop.freeze(Time.utc(1994, 2, 28)) do
+      assert_equal 30, h('280264-051U').age
+    end
   end
 
   def test_checksum
