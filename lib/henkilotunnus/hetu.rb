@@ -2,10 +2,50 @@ module Henkilotunnus
   class Hetu
     GENDERS = ['female', 'male']
     CENTURIES = { '+' => 1800, '-' => 1900, 'A' => 2000 }
+    PERSON_NUMBER_RANGE = 2..899
     CHECKSUM_CHARS = '0123456789ABCDEFHJKLMNPRSTUVWXY'
 
     def self.valid?(pin)
       new(pin).valid?
+    end
+
+    def self.generate(**kwargs)
+      dob = date_of_birth(kwargs)
+      raw_dob = dob.strftime("%d%m%y")
+      person_number = (kwargs[:person_number] || rand(PERSON_NUMBER_RANGE)).to_s.rjust(3, "0")
+      hetu = new(raw_dob + century_sign(century(dob)) + person_number + compute_checksum(raw_dob, person_number))
+      raise "generated hetu was invalid" unless hetu.valid?
+      hetu
+    end
+
+    def self.date_of_birth(**kwargs)
+      date = if kwargs[:date]
+        kwargs[:date].to_date
+      else
+        random_date(date_limits(kwargs))
+      end
+      raise "invalid date #{date}" unless date >= Date.new(1800, 1, 1)
+      date
+    end
+
+    def self.random_date(start_date: Date.new(1800, 1, 2), end_date: Time.now.utc.to_date)
+      Time.at(rand(start_date.to_time.to_i...(end_date.to_time.to_i + 24*60*60))).to_date
+    end
+
+    def self.date_limits(**kwargs)
+      kwargs.select { |k,_v| [:start_date, :end_date].include? k }.reject { |_k,v| v.nil? }
+    end
+
+    def self.compute_checksum(raw_dob, person_number)
+      CHECKSUM_CHARS[ (raw_dob + person_number).to_i % 31 ]
+    end
+
+    def self.century(date)
+      date.year - (date.year % 100)
+    end
+
+    def self.century_sign(century)
+      CENTURIES.key(century)
     end
 
     attr_reader :pin
@@ -84,11 +124,11 @@ module Henkilotunnus
     end
 
     def valid_person_number?
-      (2..899).cover?(person_number.to_i)
+      PERSON_NUMBER_RANGE.cover?(person_number.to_i)
     end
 
     def compute_checksum
-      CHECKSUM_CHARS[ (raw_dob + person_number).to_i % 31 ]
+      self.class.compute_checksum(raw_dob, person_number)
     end
   end
 end
