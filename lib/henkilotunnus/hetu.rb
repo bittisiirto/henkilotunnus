@@ -12,28 +12,24 @@ module Henkilotunnus
     def self.generate(**kwargs)
       dob = date_of_birth(kwargs)
       raw_dob = dob.strftime("%d%m%y")
-      person_number = (kwargs[:person_number] || rand(PERSON_NUMBER_RANGE)).to_s.rjust(3, "0")
-      hetu = new(raw_dob + century_sign(century(dob)) + person_number + compute_checksum(raw_dob, person_number))
-      raise "generated hetu was invalid" unless hetu.valid?
-      hetu
+      person_number = kwargs.fetch(:person_number, rand(PERSON_NUMBER_RANGE)).to_s.rjust(3, "0")
+      new(raw_dob + century_sign(century(dob)) + person_number + compute_checksum(raw_dob, person_number)).tap do |h|
+        raise "generated hetu was invalid" unless h.valid?
+      end
     end
 
     def self.date_of_birth(**kwargs)
-      date = if kwargs[:date]
-        kwargs[:date].to_date
-      else
-        random_date(date_limits(kwargs))
+      kwargs.fetch(:date, random_time_between(date_limits(kwargs))).to_date.tap do |date|
+        raise "invalid date #{date}" unless date >= Date.new(1800, 1, 1)
       end
-      raise "invalid date #{date}" unless date >= Date.new(1800, 1, 1)
-      date
     end
 
-    def self.random_date(start_date: Date.new(1800, 1, 2), end_date: Time.now.utc.to_date)
-      Time.at(rand(start_date.to_time.to_i...(end_date.to_time.to_i + 24*60*60))).to_date
+    def self.random_time_between(start_date: Date.new(1800, 1, 2), end_date: Time.now.utc.to_date)
+      Time.at(rand(start_date.to_time.to_i...(end_date.to_time.to_i + 24*60*60)))
     end
 
     def self.date_limits(**kwargs)
-      kwargs.select { |k,_v| [:start_date, :end_date].include? k }.reject { |_k,v| v.nil? }
+      kwargs.select { |k,v| [:start_date, :end_date].include?(k) && !v.nil? }
     end
 
     def self.compute_checksum(raw_dob, person_number)
