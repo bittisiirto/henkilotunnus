@@ -92,14 +92,4 @@ class HetuTest < Minitest::Test
     hetu = g(date: date)
     assert_equal date, hetu.date_of_birth
   end
-
-  def test_generate_with_date_range
-    start_date = Date.new(1964, 2, 1)
-    end_date = Date.new(1964, 2, 28)
-    date_range = { start_date: start_date, end_date: end_date}
-    100.times do
-      dob = g(date_range).date_of_birth
-      assert start_date <= dob && dob <= end_date
-    end
-  end
 end
