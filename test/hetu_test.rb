@@ -1,8 +1,12 @@
-require './test_helper'
+require 'test_helper'
 
 class HetuTest < Minitest::Test
   def h(s)
     Hetu.new(s)
+  end
+
+  def g(args={})
+    Hetu.generate(args)
   end
 
   def test_valid
@@ -71,5 +75,21 @@ class HetuTest < Minitest::Test
     pin = Hetu.new('  2802 6 4-05  1u   ')
     assert pin.valid?
     assert '280264-051U', pin.to_s
+  end
+
+  def test_generate
+    100.times do
+      assert g.valid?
+    end
+  end
+
+  def test_generate_with_person_number
+    assert_equal '051', g(person_number: 51).person_number
+  end
+
+  def test_generate_with_date
+    date = Date.new(1964, 2, 28)
+    hetu = g(date: date)
+    assert_equal date, hetu.date_of_birth
   end
 end

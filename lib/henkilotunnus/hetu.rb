@@ -2,10 +2,24 @@ module Henkilotunnus
   class Hetu
     GENDERS = ['female', 'male']
     CENTURIES = { '+' => 1800, '-' => 1900, 'A' => 2000 }
+    PERSON_NUMBER_RANGE = 2..899
     CHECKSUM_CHARS = '0123456789ABCDEFHJKLMNPRSTUVWXY'
 
     def self.valid?(pin)
       new(pin).valid?
+    end
+
+    def self.generate(opts={})
+      dob = opts.fetch(:date, Time.at(rand(Date.new(1800, 1, 1).to_time.to_i...Date.today.to_time.to_i)).to_date)
+      raw_dob = dob.strftime("%d%m%y")
+      person_number = opts.fetch(:person_number, rand(PERSON_NUMBER_RANGE)).to_s.rjust(3, "0")
+      century_sign = CENTURIES.key(dob.year - (dob.year % 100))
+
+      new(raw_dob + century_sign + person_number + compute_checksum(raw_dob, person_number))
+    end
+
+    def self.compute_checksum(raw_dob, person_number)
+      CHECKSUM_CHARS[ (raw_dob + person_number).to_i % 31 ]
     end
 
     attr_reader :pin
@@ -84,11 +98,11 @@ module Henkilotunnus
     end
 
     def valid_person_number?
-      (2..899).cover?(person_number.to_i)
+      PERSON_NUMBER_RANGE.cover?(person_number.to_i)
     end
 
     def compute_checksum
-      CHECKSUM_CHARS[ (raw_dob + person_number).to_i % 31 ]
+      self.class.compute_checksum(raw_dob, person_number)
     end
   end
 end
