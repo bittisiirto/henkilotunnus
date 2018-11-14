@@ -25,7 +25,7 @@ Hetu.valid?("280264-051U")
 Hetu.generate # Generate a random pin
 
 class User < ActiveRecord
-	validates :pin, hetu: true
+  validates :pin, hetu: true
 end
 ```
 
