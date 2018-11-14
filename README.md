@@ -22,6 +22,7 @@ Hetu is a gem for validating Finnish [personal identification numbers](http://en
 
 ```ruby
 Hetu.valid?("280264-051U")
+Hetu.generate # Generate a random pin
 
 class User < ActiveRecord
 	validates :pin, hetu: true
