@@ -3,14 +3,14 @@ require 'henkilotunnus/test/person_model'
 
 class HetuValidatorTest < Minitest::Test
   def create_model
-    PersonModel.new('X')
+    Test::PersonModel.new('X')
   end
 
   def test_validator_valid
     Hetu.stub(:valid?, true) do
       model = create_model
       assert model.valid?
-      assert !model.errors.any?
+      assert model.errors.none?
     end
   end
 
@@ -19,7 +19,7 @@ class HetuValidatorTest < Minitest::Test
       model = create_model
       assert !model.valid?
       assert_includes model.errors.keys, :pin
-      assert_equal model.errors.messages[:pin], ["is invalid"]
+      assert_equal model.errors.messages[:pin], ['is invalid']
     end
   end
 
@@ -27,7 +27,7 @@ class HetuValidatorTest < Minitest::Test
     Hetu.stub(:valid?, false) do
       model = create_model
       assert !model.valid?
-      assert_equal model.errors.messages[:pin_message], ["custom message"]
+      assert_equal model.errors.messages[:pin_message], ['custom message']
     end
   end
 end
