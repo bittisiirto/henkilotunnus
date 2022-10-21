@@ -13,9 +13,9 @@ module Henkilotunnus
       dob = opts.fetch(:date, Time.at(rand(Date.new(1800, 1, 1).to_time.to_i...Date.today.to_time.to_i)).to_date)
       raw_dob = dob.strftime("%d%m%y")
       person_number = opts.fetch(:person_number, rand(PERSON_NUMBER_RANGE)).to_s.rjust(3, "0")
-      century_sign = CENTURIES.key(dob.year - (dob.year % 100))
-      sign_str_len = century_sign.size - 1
-      century_sign = century_sign[rand(0..sign_str_len)]
+      century_str = CENTURIES.key(dob.year - (dob.year % 100))
+      sign_str_len = century_str.size - 1
+      century_sign = century_str[rand(0..sign_str_len)]
 
       new(raw_dob + century_sign + person_number + compute_checksum(raw_dob, person_number))
     end
@@ -70,7 +70,11 @@ module Henkilotunnus
     end
 
     def century
-      CENTURIES[century_sign]
+      CENTURIES.keys.each do |string|
+        if string.include? century_sign
+          return CENTURIES[string]
+        end
+      end
     end
 
     def checksum
