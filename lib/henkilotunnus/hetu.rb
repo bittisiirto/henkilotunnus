@@ -2,6 +2,7 @@ module Henkilotunnus
   class Hetu
     GENDERS = ['female', 'male']
     CENTURIES = { '+' => 1800, '-YXWVU' => 1900, 'ABCDEF' => 2000 }
+    NEW_CENTURY_SIGNS = 'YXWVUBCDEF'
     PERSON_NUMBER_RANGE = 0..999
     CHECKSUM_CHARS = '0123456789ABCDEFHJKLMNPRSTUVWXY'
 
@@ -43,7 +44,15 @@ module Henkilotunnus
     end
 
     def gender
-      GENDERS[person_number.to_i % 2]
+      if is_gender_neutral?
+        raise 'gender methods cannot be used with gender neutral identity codes. Use is_gender_neutral? to check.'
+      else
+        GENDERS[person_number.to_i % 2]
+      end
+    end
+
+    def is_gender_neutral?
+      (NEW_CENTURY_SIGNS.include? century_sign) && (Time.now.year > 2026)
     end
 
     def male?
