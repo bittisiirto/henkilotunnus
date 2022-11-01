@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0 2022-10-xx
+
+Added new punctuation marks that will be added to identity codes in 2023.
+
+Added is_gender_neutral? method. Using gender methods on gender neutral 
+identity codes will raise an exception. Gender neutral identity codes will
+be introduced in 2027. Gender methods will still be available for pins using
+the old punctuation. 
+
 ## 1.1.0 - 2019-04-xx
 
 Removed the lock down from the dependent gems in order to make the gem

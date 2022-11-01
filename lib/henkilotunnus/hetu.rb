@@ -1,8 +1,9 @@
 module Henkilotunnus
   class Hetu
     GENDERS = ['female', 'male']
-    CENTURIES = { '+' => 1800, '-' => 1900, 'A' => 2000 }
-    PERSON_NUMBER_RANGE = 2..899
+    CENTURIES = { '+' => 1800, '-YXWVU' => 1900, 'ABCDEF' => 2000 }
+    NEW_CENTURY_SIGNS = 'YXWVUBCDEF'
+    PERSON_NUMBER_RANGE = 0..999
     CHECKSUM_CHARS = '0123456789ABCDEFHJKLMNPRSTUVWXY'
 
     def self.valid?(pin)
@@ -13,7 +14,9 @@ module Henkilotunnus
       dob = opts.fetch(:date, Time.at(rand(Date.new(1800, 1, 1).to_time.to_i...Date.today.to_time.to_i)).to_date)
       raw_dob = dob.strftime("%d%m%y")
       person_number = opts.fetch(:person_number, rand(PERSON_NUMBER_RANGE)).to_s.rjust(3, "0")
-      century_sign = CENTURIES.key(dob.year - (dob.year % 100))
+      century_str = CENTURIES.key(dob.year - (dob.year % 100))
+      sign_str_len = century_str.size - 1
+      century_sign = century_str[rand(0..sign_str_len)]
 
       new(raw_dob + century_sign + person_number + compute_checksum(raw_dob, person_number))
     end
@@ -41,7 +44,15 @@ module Henkilotunnus
     end
 
     def gender
-      GENDERS[person_number.to_i % 2]
+      if is_gender_neutral?
+        raise 'gender methods cannot be used with gender neutral identity codes. Use is_gender_neutral? to check.'
+      else
+        GENDERS[person_number.to_i % 2]
+      end
+    end
+
+    def is_gender_neutral?
+      (NEW_CENTURY_SIGNS.include? century_sign) && (Time.now.year > 2026)
     end
 
     def male?
@@ -68,7 +79,11 @@ module Henkilotunnus
     end
 
     def century
-      CENTURIES[century_sign]
+      CENTURIES.keys.each do |string|
+        if string.include? century_sign
+          return CENTURIES[string]
+        end
+      end
     end
 
     def checksum
@@ -90,7 +105,7 @@ module Henkilotunnus
     end
 
     def valid_format?
-      !!(pin =~ /^\d{6}[-+A]\d{3}[0-9A-Z]$/)
+      !!(pin =~ /^\d{6}[-+ABCDEFYXWVU]\d{3}[0-9A-Z]$/)
     end
 
     def valid_checksum?
