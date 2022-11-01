@@ -44,14 +44,14 @@ module Henkilotunnus
     end
 
     def gender
-      if is_gender_neutral?
-        raise 'gender methods cannot be used with gender neutral identity codes. Use is_gender_neutral? to check.'
+      if gender_neutral?
+        raise 'gender methods cannot be used with gender neutral identity codes. Use gender_neutral? to check.'
       else
         GENDERS[person_number.to_i % 2]
       end
     end
 
-    def is_gender_neutral?
+    def gender_neutral?
       (NEW_CENTURY_SIGNS.include? century_sign) && (Time.now.year > 2026)
     end
 

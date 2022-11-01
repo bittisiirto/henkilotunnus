@@ -4,7 +4,7 @@
 
 Added new punctuation marks that will be added to identity codes in 2023.
 
-Added is_gender_neutral? method. Using gender methods on gender neutral 
+Added gender_neutral? method. Using gender methods on gender neutral 
 identity codes will raise an exception. Gender neutral identity codes will
 be introduced in 2027. Gender methods will still be available for pins using
 the old punctuation. 
