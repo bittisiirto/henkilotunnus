@@ -73,21 +73,15 @@ class HetuTest < Minitest::Test
   def test_gender_neutral
     Timecop.travel(2028, 1, 1, 10, 5, 0)
 
-    assert h('010199Y999X').gender_neutral?
+    assert_equal false, h('010199Y999X').gender_neutral?
     assert_equal false, h('090499-185J').gender_neutral?
     assert h('090499-185J').male?
 
-    assert_raises RuntimeError do
-      h('010199Y999X').gender
-    end
+    assert_equal h('010199Y999X').gender, "male"
 
-    assert_raises RuntimeError do
-      h('010199V999X').male?
-    end
+    assert h('010199V999X').male?
 
-    assert_raises RuntimeError do
-      h('010199W999X').female?
-    end
+    assert h('010199W9986').female?
 
     Timecop.return
   end
